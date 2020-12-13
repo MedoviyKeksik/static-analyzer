@@ -9,22 +9,22 @@
 #include <algorithm>
 
 WShingling::WShingling(const unsigned int shingle_size) {
-    this->shingle_size = shingle_size;
+    this->shingleSize = shingle_size;
 }
 
 WShingling::~WShingling() {
     this->shingles.clear();
 }
 
-void WShingling::set_shingle_size(const unsigned int shingle_size) {
-    this->shingle_size = shingle_size;
+void WShingling::setShingleSize(const unsigned int shingleSize) {
+    this->shingleSize = shingleSize;
 }
 
 unsigned int WShingling::get_shingle_size() {
-    return shingle_size;
+    return shingleSize;
 }
 
-std::vector<shingle> &WShingling::get_shingles() {
+std::vector<shingle> &WShingling::getShingles() {
     return shingles;
 }
 
@@ -32,9 +32,9 @@ void WShingling::count(const std::vector<std::string> &data) {
     shingles.clear();
     std::string payload;
     if (data.size() == 0) return;
-    for (int i = 0; i < data.size() - shingle_size + 1; i++) {
+    for (int i = 0; i < data.size() - shingleSize + 1; i++) {
         payload = "";
-        for (int j = 0; j < shingle_size; j++) {
+        for (int j = 0; j < shingleSize; j++) {
             payload += data[i + j];
         }
         shingles.push_back(CRC32(payload.c_str(), payload.size()));
@@ -44,12 +44,19 @@ void WShingling::count(const std::vector<std::string> &data) {
 WShingling::WShingling() {
 }
 
-ShingleCompare::ShingleCompare(unsigned int shingle_size) {
-    left.set_shingle_size(shingle_size);
-    right.set_shingle_size(shingle_size);
+void WShingling::count(const std::string &str) {
+    shingles.clear();
+    for (int i = 0; i < str.size() - shingleSize + 1; i++) {
+        shingles.push_back(CRC32(str.substr(i, shingleSize).c_str(), shingleSize));
+    }
 }
 
-float ShingleCompare::get_ans(const std::vector<shingle> &a, const std::vector<shingle> &b) {
+ShingleCompare::ShingleCompare(unsigned int shingle_size) {
+    left.setShingleSize(shingle_size);
+    right.setShingleSize(shingle_size);
+}
+
+float ShingleCompare::getAns(const std::vector<shingle> &a, const std::vector<shingle> &b) {
     std::set<shingle> tmp;
     for (const shingle &now : a) {
         tmp.insert(now);
@@ -71,5 +78,11 @@ float ShingleCompare::get_ans(const std::vector<shingle> &a, const std::vector<s
 float ShingleCompare::count(const std::vector<std::string> &text1, const std::vector<std::string> &text2) {
     left.count(text1);
     right.count(text2);
-    return get_ans(left.get_shingles(), right.get_shingles());
+    return getAns(left.getShingles(), right.getShingles());
+}
+
+float ShingleCompare::count(const std::string &str1, const std::string &str2) {
+    left.count(str1);
+    right.count(str2);
+    return getAns(left.getShingles(), right.getShingles());
 }

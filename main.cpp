@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <string>
 #include <fstream>
@@ -6,6 +7,10 @@
 #include <stdexcept>
 #include "lexer.h"
 #include "WShingling.h"
+#include "EditorialDistanceCompare.h"
+
+#define SHINGLE_ARG "-w"
+#define EDITORIAL_ARG "-e"
 
 std::string TokenKindNames[] = {
         "Blank",
@@ -27,8 +32,9 @@ std::string TokenKindNames[] = {
 };
 
 typedef std::vector<std::string> Text;
+typedef std::vector<Token> Tokens;
 
-Text get_code(std::string filename) {
+Text getText(std::string filename) {
     std::ifstream fin(filename);
     if (!fin.is_open()) throw std::runtime_error("Can not open file");
     std::vector<std::string> code;
@@ -39,7 +45,7 @@ Text get_code(std::string filename) {
     return code;
 }
 
-Text get_lexemes_kind(const Text &code) {
+Text getLexemesKind(const Text &code) {
     Text res;
     Lexer lexer(code);
     while (!lexer.eof()) {
@@ -49,19 +55,58 @@ Text get_lexemes_kind(const Text &code) {
     return res;
 }
 
-int main(int argc, char *argv[]) {
-    for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "-w")) {
-            int shingle_len = atoi(argv[i + 1]);
-            Text code1 = get_code(argv[i + 2]);
-            Text code2 = get_code(argv[i + 3]);
-            i += 3;
+Tokens getTokens(const Text &code) {
+    std::vector<Token> res;
+    Lexer lexer(code);
+    while (!lexer.eof()) {
+        res.push_back(lexer.get_token());
+    }
+    return res;
+}
 
-            ShingleCompare cmp(shingle_len);
-            float ans = cmp.count(get_lexemes_kind(code1), get_lexemes_kind(code2));
-            std::cout << ans << std::endl;
+std::string prepare(Tokens &tokens) {
+    std::string res;
+    for (Token now : tokens) {
+        if (now.kind() != Token::Kind::Blank && now.kind() != Token::Kind::Comment)
+            res += (char)now.kind();
+    }
+    return res;
+}
+
+int main(int argc, char *argv[]) {
+    bool doShingleCompare = false;
+    int shingleSize = 0;
+    bool doEditorialDistanceCompare = false;
+
+    for (int i = 1; i < argc; i++) {
+        if (!strcmp(argv[i], SHINGLE_ARG)) {
+            doShingleCompare = true;
+            i++;
+            shingleSize = atoi(argv[i]);
+        } else if (!strcmp(argv[i], EDITORIAL_ARG)) {
+            doEditorialDistanceCompare = true;
         }
     }
+    Text sourceCode = getText(argv[argc - 1]);
+    Tokens sourceTokens = getTokens(sourceCode);
+    Text comparedCode = getText(argv[argc - 2]);
+    Tokens comparedTokens = getTokens(comparedCode);
+
+    if (doShingleCompare) {
+        ShingleCompare cmp(shingleSize);
+        std::string str1 = prepare(sourceTokens);
+        std::string str2 = prepare(comparedTokens);
+        float res = cmp.count(str1, str2);
+        std::cout << "ShingleCompare: " << std::fixed << std::setprecision(2) << res * 100 << "%\n";
+    }
+    if (doEditorialDistanceCompare) {
+        EditorialDistanceCompare cmp;
+        std::string str1 = prepare(sourceTokens);
+        std::string str2 = prepare(comparedTokens);
+        float res = cmp.count(str1, str2);
+        std::cout << "EditorialDistanceCompare: " << std::fixed << std::setprecision(2) << res * 100 << "%\n";
+    }
+
 
 //    std::vector<std::string> code;
 //    if (argc == 2) {
