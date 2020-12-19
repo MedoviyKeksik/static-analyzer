@@ -7,7 +7,7 @@
 #ifndef STATIC_ANALYZER_LEXER_H
 #define STATIC_ANALYZER_LEXER_H
 
-
+// Class that describes a token
 class Token {
 public:
     enum class Kind {
@@ -39,6 +39,7 @@ public:
     bool is(Kind kind);
 };
 
+// Class that translates program code into lexemes
 class Lexer {
 private:
     std::vector<std::string> buffer;

@@ -6,7 +6,6 @@
 #include "CRC32.h"
 #include <set>
 #include <iostream>
-#include <algorithm>
 
 WShingling::WShingling(const unsigned int shingle_size) {
     this->shingleSize = shingle_size;

@@ -44,8 +44,8 @@ std::string to_string(char c) {
 
 Token Lexer::get_token() {
     char c = peek();
-    if (is_blank(c)) return Token(Token::Kind::Blank, get_blank());
-    if (is_digit(c)) return Token(Token::Kind::DigitConst, get_digit());
+    if (isBlank(c)) return Token(Token::Kind::Blank, get_blank());
+    if (isDigit(c)) return Token(Token::Kind::DigitConst, get_digit());
     if ((c == 'L' && at(1) == '\'') || c == '\'') return Token(Token::Kind::CharConst, get_char());
     if ((c == 'L' && at(1) == '\"') || c == '\"') return Token(Token::Kind::StringConst, get_string());
     if (c == '(') return Token(Token::Kind::LeftRound, to_string(get()));
@@ -57,9 +57,9 @@ Token Lexer::get_token() {
     if (c == '.') return Token(Token::Kind::Dot, to_string(get()));
     if (c == ';') return Token(Token::Kind::Semicolon, to_string(get()));
     if (c == '/' && (at(1) == '/' || at(1) == '*')) return Token(Token::Kind::Comment, get_comment());
-    if (is_letter(c)) {
+    if (isLetter(c)) {
         std::string tmp = get_identifier();
-        if (is_reserved(tmp)) return Token(Token::Kind::Reserved, tmp);
+        if (isReserved(tmp)) return Token(Token::Kind::Reserved, tmp);
         return Token(Token::Kind::Identifier, tmp);
     }
     return Token(Token::Kind::Operator, get_operator());
@@ -95,7 +95,7 @@ char Lexer::peek() {
 
 std::string Lexer::get_blank() {
     std::string res;
-    while (is_blank(peek())) res.push_back(get());
+    while (isBlank(peek())) res.push_back(get());
     return res;
 }
 
@@ -175,9 +175,9 @@ std::string Lexer::get_operator() {
 std::string Lexer::get_digit() {
     std::string res;
     int a = 0X1;
-    while (is_digit(peek())) res.push_back(get());
-    if (res == "0" && (peek() == 'x') || (peek() == 'X') && is_digit(at(1))) res.push_back(get());
-    while (is_digit(peek())) res.push_back(get());
+    while (isDigit(peek())) res.push_back(get());
+    if (res == "0" && (peek() == 'x') || (peek() == 'X') && isDigit(at(1))) res.push_back(get());
+    while (isDigit(peek())) res.push_back(get());
     return res;
 }
 
@@ -209,9 +209,9 @@ bool Lexer::eof() {
 
 std::string Lexer::get_identifier() {
     std::string res;
-    if (is_letter(peek())) {
+    if (isLetter(peek())) {
         res.push_back(get());
-        while (is_identifier_char(peek())) res.push_back(get());
+        while (isIdentifierChar(peek())) res.push_back(get());
     }
     return res;
 }

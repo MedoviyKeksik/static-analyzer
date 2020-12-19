@@ -11,6 +11,7 @@
 
 typedef uint32_t shingle;
 
+// Class that counts shingles on some text
 class WShingling {
 public:
     WShingling();
@@ -27,6 +28,7 @@ private:
     std::vector<shingle> shingles;
 };
 
+// Class that compares two sets of shingles
 class ShingleCompare {
 public:
     ShingleCompare(unsigned int shingle_size);

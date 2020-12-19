@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 
+// Class that compares two strings base on editorial distance
 class EditorialDistanceCompare {
 public:
     float count(const std::string &str1, const std::string &str2);

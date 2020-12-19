@@ -1,8 +1,10 @@
 //
 // Created by Slonik on 11.11.2020.
 //
+
 #include <string>
 
+// Array of reserved keywords in C++
 std::string reserved[] = {
     "alignas",
     "alignof",
@@ -104,26 +106,26 @@ std::string reserved[] = {
     "xor_eq"
 };
 
-bool is_reserved(std::string s) {
+bool isReserved(std::string s) {
     for (auto &now: reserved) {
         if (s == now) return true;
     }
     return false;
 }
 
-bool is_digit(char c) {
+bool isDigit(char c) {
     return c >= '0' && c <= '9';
 }
 
-bool is_letter(char c) {
+bool isLetter(char c) {
     return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
 }
 
-bool is_identifier_char(char c) {
-    return is_letter(c) || is_digit(c) || c == '_';
+bool isIdentifierChar(char c) {
+    return isLetter(c) || isDigit(c) || c == '_';
 }
 
-bool is_blank(char c) {
+bool isBlank(char c) {
     switch (c) {
     case ' ':
     case '\t':
